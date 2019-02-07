@@ -20,5 +20,29 @@
             android:background="@color/colorAccent"
             android:gravity="center"
             android:text="@string/app_name" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorAccent"
+            android:gravity="center"
+            android:text="@string/app_name" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorAccent"
+            android:gravity="center"
+            android:text="@string/app_name" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorAccent"
+            android:gravity="center"
+            android:text="@string/app_name" />
+
+
+
     </me.licheng.crossviewpager2.ViewPagerContainer>
 </android.support.constraint.ConstraintLayout>

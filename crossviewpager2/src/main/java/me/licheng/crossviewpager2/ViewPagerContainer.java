@@ -14,6 +14,7 @@ public class ViewPagerContainer extends ViewGroup {
 
     private static final int DEFAULT_COL_COUNT = 2; //默认列
     private static final int DEFAULT_ROW_COUNT = 4; //默认行
+    private static final int DEFAULT_GRID_GAP = 8; //默认格子间隙
 
     private int mColCount = DEFAULT_COL_COUNT; //列数
     private int mRowCount = DEFAULT_ROW_COUNT; //行数
@@ -29,7 +30,7 @@ public class ViewPagerContainer extends ViewGroup {
     private int mPaddingLeft;
     private int mPaddingTop;
     private int mPaddingRight;
-    private int mPaddingButtom;
+    private int mPaddingBottom;
 
     private int mMaxOverScrollSize; //最大滚动距离
     private int mEdgeSize;
@@ -51,13 +52,16 @@ public class ViewPagerContainer extends ViewGroup {
 
     public ViewPagerContainer(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
+        final float density = context.getResources().getDisplayMetrics().density;
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        measureChildren(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec)
-                , getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec));
+        mGridGap = (int) (DEFAULT_GRID_GAP * density);
+
+        mPaddingLeft = getPaddingLeft();
+        mPaddingTop = getPaddingTop();
+        mPaddingRight = getPaddingRight();
+        mPaddingBottom = getPaddingBottom();
+        super.setPadding(mPaddingLeft, mPaddingTop, mPaddingRight, mPaddingBottom);
+
     }
 
     @Override
@@ -65,7 +69,7 @@ public class ViewPagerContainer extends ViewGroup {
         final int childCount = getChildCount();
         mPageCount = (childCount + mPageSize - 1) / mPageSize;
         mGridWidth = (getWidth() - mPaddingLeft - mPaddingRight - (mColCount - 1) * mGridGap) / mColCount;
-        mGridHeight = (getHeight() - mPaddingTop - mPaddingButtom - (mRowCount - 1) * mGridGap) / mRowCount;
+        mGridHeight = (getHeight() - mPaddingTop - mPaddingBottom - (mRowCount - 1) * mGridGap) / mRowCount;
         mGridWidth = mGridHeight = Math.min(mGridWidth, mGridHeight); //取宽高最小值
         mMaxOverScrollSize = mGridWidth / 2;
         mEdgeSize = mGridWidth / 2;
@@ -85,11 +89,12 @@ public class ViewPagerContainer extends ViewGroup {
     private Rect getRectByPosition(int position) {
         final int page = position / mPageSize; //页数
         final int col = (position % mPageSize) % mColCount; //列
-        final int row = (position % mPageSize) % mColCount; //行
+        final int row = (position % mPageSize) / mColCount; //行
         final int left = getWidth() * page + mPaddingLeft + col * (mGridGap + mGridWidth); //左边距
         final int top = mPaddingTop + row * (mGridHeight + mGridGap); //上边距
         return new Rect(left, top, left + mGridWidth, top + mGridHeight);
     }
+
 
 
     /**
