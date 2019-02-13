@@ -21,6 +21,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.Scroller;
 
 import java.util.ArrayList;
@@ -100,6 +101,9 @@ public class ViewPagerContainer extends ViewGroup {
     private int mMinimumVelocity;
 
     private VelocityTracker mVelocityTracker;
+
+    private AdapterView.OnItemLongClickListener mOnItemLongClickListener;
+
 
 
 
@@ -673,9 +677,16 @@ public class ViewPagerContainer extends ViewGroup {
         }
     }
 
-    private boolean onItemLongClick(int currentPosition) {
+    private boolean onItemLongClick(int position) {
+        if (mOnItemLongClickListener != null) {
+            return mOnItemLongClickListener.onItemLongClick(null, getChildAt(position), position, position / mColCount);
+        }
+        return false;
+    }
 
-        return true;
+
+    public void setOnItemLongClickListener(AdapterView.OnItemLongClickListener listener) {
+        mOnItemLongClickListener = listener;
     }
 
     /**
