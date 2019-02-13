@@ -36,6 +36,7 @@ public class ViewPagerContainer extends ViewGroup {
     private static final long EDGE_HOLD_DURATION = 1200;
     private static final int MAX_SETTLE_DURATION = 600;
     private static final int MIN_FLING_VELOCITY = 400;
+    private static final int MIN_DISTANCE_FOR_FLING = 25;
     private final int mMaximumVelocity;
 
     private int mColCount = DEFAULT_COL_COUNT; //列数
@@ -104,7 +105,9 @@ public class ViewPagerContainer extends ViewGroup {
 
     private AdapterView.OnItemLongClickListener mOnItemLongClickListener;
 
+    private OnPageChangeListener mOnPageChangeListener;
 
+    private boolean mCalledSuper;
 
 
     public ViewPagerContainer(Context context) {
@@ -136,6 +139,8 @@ public class ViewPagerContainer extends ViewGroup {
 
         mMinimumVelocity = (int) (MIN_FLING_VELOCITY * density);
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
+
+        mFlingDistance = (int) (MIN_DISTANCE_FOR_FLING * density);
 
 
     }
@@ -267,6 +272,19 @@ public class ViewPagerContainer extends ViewGroup {
         return mIsBeingDragged;
     }
 
+
+    @Override
+    protected int getChildDrawingOrder(int childCount, int i) {
+        if (mLastDragged == -1) {
+            return i;
+        } else if (i == childCount - 1) {
+            return mLastDragged;
+        } else if (i >= mLastDragged) {
+            return i + 1;
+        }
+        return i;
+    }
+
     @Override
     public void computeScroll() {
         if (!mScroller.isFinished() && mScroller.computeScrollOffset()) {
@@ -283,12 +301,10 @@ public class ViewPagerContainer extends ViewGroup {
                 }
             }
 
-            // Keep on drawing until the animation has finished.
             ViewCompat.postInvalidateOnAnimation(this);
             return;
         }
 
-        // Done with scroll, clean up state.
         completeScroll(true);
     }
 
@@ -573,7 +589,13 @@ public class ViewPagerContainer extends ViewGroup {
         final int destX = getWidth() * item;
         if (smoothScroll) {
             smoothScrollTo(destX, 0, velocity);
+            if (dispatchSelected && mOnPageChangeListener != null) {
+                mOnPageChangeListener.onPageSelected(item);
+            }
         } else {
+            if (dispatchSelected && mOnPageChangeListener != null) {
+                mOnPageChangeListener.onPageSelected(item);
+            }
             completeScroll(false);
             scrollTo(destX, 0);
             pageScrolled(destX);
@@ -616,7 +638,7 @@ public class ViewPagerContainer extends ViewGroup {
 
         mScroller.startScroll(sx, sy, dx, dy, duration);
         ViewCompat.postInvalidateOnAnimation(this);
-        
+
     }
 
     private float distanceInfluenceForSnapDuration(float f) {
@@ -685,6 +707,10 @@ public class ViewPagerContainer extends ViewGroup {
     }
 
 
+    public void setOnPageChangeListener(OnPageChangeListener listener) {
+        mOnPageChangeListener = listener;
+    }
+
     public void setOnItemLongClickListener(AdapterView.OnItemLongClickListener listener) {
         mOnItemLongClickListener = listener;
     }
@@ -720,8 +746,33 @@ public class ViewPagerContainer extends ViewGroup {
         return needsInvalidate;
     }
 
-    private boolean pageScrolled(int scrollX) {
+    private boolean pageScrolled(int xpos) {
+        if (mPageCount <= 0) {
+            mCalledSuper = false;
+            onPageScrolled(0, 0, 0);
+            if (!mCalledSuper) {
+                throw new IllegalStateException("onPageScrolled did not call superclass implementation");
+            }
+            return false;
+        }
+        final int width = getWidth();
+        final int currentPage = xpos / width;
+        final int offsetPixels = xpos - currentPage * width;
+        final float pageOffset = (float) offsetPixels / (float) width;
+
+        mCalledSuper = false;
+        onPageScrolled(currentPage, pageOffset, offsetPixels);
+        if (!mCalledSuper) {
+            throw new IllegalStateException("onPageScrolled did not call superclass implementation");
+        }
         return true;
+    }
+
+    protected void onPageScrolled(int position, float offset, int offsetPixels) {
+        if (mOnPageChangeListener != null) {
+            mOnPageChangeListener.onPageScrolled(position, offset, offsetPixels);
+        }
+        mCalledSuper = true;
     }
 
     private void setScrollingCacheEnabled(boolean b) {
@@ -735,6 +786,9 @@ public class ViewPagerContainer extends ViewGroup {
             return;
         }
         mScrollState = newState;
+        if (mOnPageChangeListener != null) {
+            mOnPageChangeListener.onPageScrollStateChanged(newState);
+        }
     }
 
     /**
@@ -870,5 +924,20 @@ public class ViewPagerContainer extends ViewGroup {
                 addView(child);
             }
         }
+    }
+
+    public interface OnPageChangeListener {
+
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
+
+        public void onPageSelected(int position);
+
+        /**
+         * @param state The new scroll state.
+         * @see ViewPagerContainer#SCROLL_STATE_IDLE
+         * @see ViewPagerContainer#SCROLL_STATE_DRAGGING
+         * @see ViewPagerContainer#SCROLL_STATE_SETTLING
+         */
+        public void onPageScrollStateChanged(int state);
     }
 }

@@ -9,6 +9,7 @@
     <me.licheng.crossviewpager2.ViewPagerContainer
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/viewpager"
         android:paddingBottom="20dp"
         android:paddingLeft="20dp"
         android:paddingRight="60dp"
