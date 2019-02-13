@@ -21,22 +21,26 @@ public class MainActivity extends AppCompatActivity {
         viewpager.setOnPageChangeListener(new ViewPagerContainer.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
                 Log.i(TAG, String.format("onPageScrolled-->position=%d, positionOffset=%f, positionOffsetPixels=%d", position, positionOffset, positionOffsetPixels));
             }
 
             @Override
             public void onPageSelected(int position) {
+
                 Log.i(TAG, String.format("onPageSelected-->position=%d", position));
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+
                 Log.i(TAG, String.format("onPageScrollStateChanged-->state=%d", state));
             }
         });
         viewpager.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Log.i(TAG, String.format("onItemLongClick-->position=%d", position));
                 return false;
             }
