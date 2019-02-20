@@ -24,9 +24,12 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Scroller;
 
+
 import java.util.ArrayList;
 
-public class ViewPagerContainer extends ViewGroup {
+import me.licheng.viewpagerindicator.IViewPager;
+
+public class ViewPagerContainer extends ViewGroup implements IViewPager {
 
     private final static String TAG = ViewPagerContainer.class.getSimpleName();
 
@@ -706,11 +709,6 @@ public class ViewPagerContainer extends ViewGroup {
         return false;
     }
 
-
-    public void setOnPageChangeListener(OnPageChangeListener listener) {
-        mOnPageChangeListener = listener;
-    }
-
     public void setOnItemLongClickListener(AdapterView.OnItemLongClickListener listener) {
         mOnItemLongClickListener = listener;
     }
@@ -926,18 +924,14 @@ public class ViewPagerContainer extends ViewGroup {
         }
     }
 
-    public interface OnPageChangeListener {
-
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
-
-        public void onPageSelected(int position);
-
-        /**
-         * @param state The new scroll state.
-         * @see ViewPagerContainer#SCROLL_STATE_IDLE
-         * @see ViewPagerContainer#SCROLL_STATE_DRAGGING
-         * @see ViewPagerContainer#SCROLL_STATE_SETTLING
-         */
-        public void onPageScrollStateChanged(int state);
+    @Override
+    public Adapter getAdapter() {
+        return mAdapter;
     }
+
+    @Override
+    public void addOnPageChangeListener(OnPageChangeListener listener) {
+        mOnPageChangeListener = listener;
+    }
+
 }
