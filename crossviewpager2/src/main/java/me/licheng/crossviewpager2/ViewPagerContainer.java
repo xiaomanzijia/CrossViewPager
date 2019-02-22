@@ -934,4 +934,30 @@ public class ViewPagerContainer extends ViewGroup implements IViewPager {
         mOnPageChangeListener = listener;
     }
 
+    public int getColCount() {
+        return mColCount;
+    }
+
+    public void setColCount(int colCount) {
+        if (colCount < 1) {
+            colCount = 1;
+        }
+        mColCount = colCount;
+        mPageSize = mColCount * mRowCount;
+        requestLayout();
+    }
+
+    public int getRowCount() {
+        return mRowCount;
+    }
+
+    public void setRowCount(int rowCount) {
+        if (rowCount < 1) {
+            rowCount = 1;
+        }
+        mRowCount = rowCount;
+        mPageSize = mColCount * mRowCount;
+        requestLayout();
+    }
+
 }

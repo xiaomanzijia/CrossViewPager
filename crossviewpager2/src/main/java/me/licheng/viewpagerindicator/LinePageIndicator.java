@@ -161,7 +161,7 @@ public class LinePageIndicator extends View implements ILinePageIndicator {
         if (mViewPager == null) {
             return;
         }
-        final int count = mViewPager.getAdapter().getCount() / 8 + 1;
+        final int count = mViewPager.getAdapter().getCount() / (mViewPager.getRowCount() * mViewPager.getColCount()) + 1;
         if (count == 0) {
             return;
         }

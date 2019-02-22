@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
         IViewPager viewpager = findViewById(R.id.viewpager);
 
+        viewpager.setRowCount(6);
+        viewpager.setColCount(4);
+
         adapter = new ArrayAdapter<String>(this, 0) {
             @NonNull
             @Override
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
             ;
         };
+
         for (int i = 0; i < 55; i++) {
             adapter.add("Grid " + i);
         }

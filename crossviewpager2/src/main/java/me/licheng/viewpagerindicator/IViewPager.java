@@ -19,4 +19,12 @@ public interface IViewPager {
     void setCurrentItem(int item);
 
     void setOnItemLongClickListener(AdapterView.OnItemLongClickListener onItemLongClickListener);
+
+    void setRowCount(int rowCount);
+
+    void setColCount(int colCount);
+
+    int getColCount();
+
+    int getRowCount();
 }
